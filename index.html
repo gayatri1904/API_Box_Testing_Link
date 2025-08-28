@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHAINFLY • API Box</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #3B82F6;
+            --secondary-teal: #14B8A6;
+            --accent-orange: #F97316;
+            --success-green: #10B981;
+            --warning-yellow: #F59E0B;
+            --error-red: #EF4444;
+            --neutral-50: #F9FAFB;
+            --neutral-100: #F3F4F6;
+            --neutral-200: #E5E7EB;
+            --neutral-300: #D1D5DB;
+            --neutral-400: #9CA3AF;
+            --neutral-500: #6B7280;
+            --neutral-600: #4B5563;
+            --neutral-700: #374151;
+            --neutral-800: #1F2937;
+            --neutral-900: #111827;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
+            color: var(--neutral-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+            color: white;
+            padding: 24px 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-orange) 0%, var(--warning-yellow) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .role-switcher {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 4px;
+            backdrop-filter: blur(10px);
+        }
+
+        .role-button {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .role-button.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Controls */
+        .controls {
+            padding: 32px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--neutral-200);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid var(--neutral-200);
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .admin-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            border: 2px solid var(--neutral-200);
+        }
+
+        .btn-secondary:hover {
+            background: var(--neutral-200);
+            transform: translateY(-1px);
+        }
+
+        .toggle-button {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .toggle-button input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--neutral-300);
+            border-radius: 24px;
+            transition: 0.2s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-blue);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* API Grid */
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            padding-bottom: 48px;
+        }
+
+        .api-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--neutral-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .api-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .api-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-teal));
+        }
+
+        .api-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .api-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--neutral-900);
+            margin-bottom: 4px;
+        }
+
+        .api-description {
+            color: var(--neutral-600);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .api-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-active {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .badge-inactive {
+            background: var(--neutral-400);
+            color: white;
+        }
+
+        .badge-maintenance {
+            background: var(--warning-yellow);
+            color: white;
+        }
+
+        .tag {
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .category-tag {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, var(--warning-yellow) 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .api-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+
+        .btn-edit {
+            background: var(--warning-yellow);
+            color: white;
+        }
+
+        .btn-delete {
+            background: var(--error-red);
+            color: white;
+        }
+
+        .btn-request {
+            background: linear-gradient(135deg, var(--secondary-teal) 0%, var(--primary-blue) 100%);
+            color: white;
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* Technical Fields */
+        .technical-fields {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--neutral-50);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .tech-field {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .tech-label {
+            font-weight: 600;
+            color: var(--neutral-600);
+        }
+
+        .tech-value {
+            color: var(--neutral-800);
+            word-break: break-all;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--neutral-900);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--neutral-500);
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--neutral-800);
+            background: var(--neutral-100);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--neutral-700);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--neutral-200);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            background: var(--neutral-200);
+            color: var(--neutral-700);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--success-green) 0%, var(--secondary-teal) 100%);
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 64px 24px;
+            color: var(--neutral-500);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                flex-direction: column;
+                max-width: none;
+            }
+
+            .api-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                width: 95%;
+                padding: 24px;
+            }
+
+            .admin-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">🔗</div>
+                    <div>
+                        <h1>CHAINFLY</h1>
+                        <div style="font-size: 14px; opacity: 0.8; font-weight: 400;">API Box</div>
+                    </div>
+                </div>
+                <div class="role-switcher">
+                    <button class="role-button active" onclick="switchRole('customer')">Customer</button>
+                    <button class="role-button" onclick="switchRole('admin')">Admin</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search APIs..." id="searchInput">
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Solar">Solar</option>
+                    <option value="Finance">Finance</option>
+                    <option value="GIS">GIS</option>
+                    <option value="EV">EV</option>
+                    <option value="Agriculture">Agriculture</option>
+                </select>
+            </div>
+            <div class="admin-controls" id="adminControls" style="display: none;">
+                <label class="toggle-container" style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 14px; color: var(--neutral-600);">Show Technical</span>
+                    <label class="toggle-button">
+                        <input type="checkbox" id="techToggle">
+                        <span class="slider"></span>
+                    </label>
+                </label>
+                <button class="btn btn-primary" onclick="openAddModal()">+ Add API</button>
+            </div>
+        </div>
+
+        <div class="api-grid" id="apiGrid">
+            <!-- APIs will be populated here -->
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">📦</div>
+            <h3>No APIs found</h3>
+            <p>Try adjusting your search or filter criteria</p>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add API</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="apiForm">
+                <div class="form-group">
+                    <label class="form-label">API Name</label>
+                    <input type="text" class="form-input" id="apiName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="apiDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-input" id="apiCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="Solar">Solar</option>
+                        <option value="Finance">Finance</option>
+                        <option value="GIS">GIS</option>
+                        <option value="EV">EV</option>
+                        <option value="Agriculture">Agriculture</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tags (comma-separated)</label>
+                    <input type="text" class="form-input" id="apiTags" placeholder="REST, public, v1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-input" id="apiStatus" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">OpenAPI URL</label>
+                    <input type="url" class="form-input" id="apiOpenApiUrl" placeholder="https://api.example.com/openapi.json">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Base URL</label>
+                    <input type="url" class="form-input" id="apiBaseUrl" placeholder="https://api.example.com/v1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Owner</label>
+                    <input type="text" class="form-input" id="apiOwner" placeholder="Engineering Team">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-save">Save API</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let currentRole = 'customer';
+        let showTechnicalFields = false;
+        let apis = [];
+        let editingApiId = null;
+
+        // Sample Data
+        const sampleApis = [
+            {
+                id: 1,
+                name: "Solar Irradiance API",
+                description: "Real-time solar irradiance data with historical trends and weather correlations for renewable energy optimization.",
+                category: "Solar",
+                tags: ["REST", "real-time", "weather", "v2"],
+                status: "active",
+                openApiUrl: "https://solar.chainfly.com/openapi.json",
+                baseUrl: "https://solar.chainfly.com/v2",
+                owner: "Green Energy Team"
+            },
+            {
+                id: 2,
+                name: "Carbon Credit Exchange",
+                description: "Global carbon credit trading platform with automated pricing, verification, and ESG compliance reporting.",
+                category: "Finance",
+                tags: ["GraphQL", "ESG", "trading", "v1"],
+                status: "active",
+                openApiUrl: "https://carbon.chainfly.com/graphql/schema",
+                baseUrl: "https://carbon.chainfly.com/v1",
+                owner: "Sustainability Team"
+            },
+            {
+                id: 3,
+                name: "GeoSpatial Analytics",
+                description: "Advanced geospatial data processing with ML-powered insights for land use optimization and environmental monitoring.",
+                category: "GIS",
+                tags: ["REST", "ML", "geospatial", "beta"],
+                status: "maintenance",
+                openApiUrl: "https://geo.chainfly.com/openapi.json",
+                baseUrl: "https://geo.chainfly.com/beta",
+                owner: "Data Science Team"
+            },
+            {
+                id: 4,
+                name: "EV Charging Network",
+                description: "Comprehensive electric vehicle charging station locator with real-time availability and dynamic pricing.",
+                category: "EV",
+                tags: ["REST", "real-time", "mobile", "v1"],
+                status: "active",
+                openApiUrl: "https://ev.chainfly.com/openapi.json",
+                baseUrl: "https://ev.chainfly.com/v1",
+                owner: "Mobility Team"
+            },
+            {
+                id: 5,
+                name: "Smart Agriculture Hub",
+                description: "IoT-driven crop monitoring and yield prediction with weather integration and automated irrigation controls.",
+                category: "Agriculture",
+                tags: ["IoT", "REST", "ML", "v2"],
+                status: "active",
+                openApiUrl: "https://agri.chainfly.com/openapi.json",
+                baseUrl: "https://agri.chainfly.com/v2",
+                owner: "AgTech Team"
+            },
+            {
+                id: 6,
+                name: "Crypto Payment Gateway",
+                description: "Secure cryptocurrency payment processing with multi-wallet support and instant settlement options.",
+                category: "Finance",
+                tags: ["REST", "crypto", "payments", "v3"],
+                status: "inactive",
+                openApiUrl: "https://crypto.chainfly.com/openapi.json",
+                baseUrl: "https://crypto.chainfly.com/v3",
+                owner: "FinTech Team"
+            }
+        ];
+
+        // Initialize Application
+        function init() {
+            loadApis();
+            setupEventListeners();
+            renderApis();
+        }
+
+        // Load APIs from localStorage
+        function loadApis() {
+            const stored = localStorage.getItem('chainfly_apis');
+            if (stored) {
+                apis = JSON.parse(stored);
+            } else {
+                apis = [...sampleApis];
+                saveApis();
+            }
+        }
+
+        // Save APIs to localStorage
+        function saveApis() {
+            localStorage.setItem('chainfly_apis', JSON.stringify(apis));
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', renderApis);
+            document.getElementById('categoryFilter').addEventListener('change', renderApis);
+            document.getElementById('techToggle').addEventListener('change', function() {
+                showTechnicalFields = this.checked;
+                renderApis();
+            });
+            document.getElementById('apiForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        // Role Management
+        function switchRole(role) {
+            currentRole = role;
+            
+            // Update UI
+            document.querySelectorAll('.role-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide admin controls
+            document.getElementById('adminControls').style.display = role === 'admin' ? 'flex' : 'none';
+            
+            if (role === 'customer') {
+                showTechnicalFields = false;
+                document.getElementById('techToggle').checked = false;
+            }
+            
+            renderApis();
+        }
+
+        // API Rendering
+        function renderApis() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            
+            let filteredApis = apis.filter(api => {
+                const matchesSearch = !searchTerm || 
+                    api.name.toLowerCase().includes(searchTerm) ||
+                    api.description.toLowerCase().includes(searchTerm) ||
+                    api.category.toLowerCase().includes(searchTerm) ||
+                    api.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                
+                const matchesCategory = !categoryFilter || api.category === categoryFilter;
+                const isPublic = currentRole === 'admin' || api.status === 'active';
+                
+                return matchesSearch && matchesCategory && isPublic;
+            });
+
+            const grid = document.getElementById('apiGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (filteredApis.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            grid.innerHTML = filteredApis.map(api => `
+                <div class="api-card">
+                    <div class="api-header">
+                        <div>
+                            <h3 class="api-title">${api.name}</h3>
+                            <div class="category-tag">${api.category}</div>
+                        </div>
+                        <span class="badge badge-${api.status}">${api.status}</span>
+                    </div>
+                    <p class="api-description">${api.description}</p>
+                    <div class="api-meta">
+                        ${api.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    ${(currentRole === 'admin' && showTechnicalFields) ? `
+                        <div class="technical-fields">
+                            <div class="tech-field">
+                                <span class="tech-label">OpenAPI URL:</span>
+                                <div class="tech-value">${api.openApiUrl || 'Not specified'}</div>
+                            </div>
+                            <div class="tech-field">
+                                <span class="tech-label">Base URL:</span>
+                                <div class="tech-value">${api.baseUrl || 'Not specified'}</div>
+                            </div>
+                            <div class="tech-field">
+                                <span class="tech-label">Owner:</span>
+                                <div class="tech-value">${api.owner || 'Not specified'}</div>
+                            </div>
+                        </div>
+                    ` : ''}
+                    <div class="api-actions">
+                        ${currentRole === 'admin' ? `
+                            <button class="btn btn-small btn-edit" onclick="editApi(${api.id})">Edit</button>
+                            <button class="btn btn-small btn-delete" onclick="deleteApi(${api.id})">Delete</button>
+                        ` : `
+                            <button class="btn btn-small btn-request" onclick="requestAccess('${api.name}')">Request Access</button>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modal Management
+        function openAddModal() {
+            editingApiId = null;
+            document.getElementById('modalTitle').textContent = 'Add API';
+            document.getElementById('apiForm').reset();
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function editApi(id) {
+            const api = apis.find(a => a.id === id);
+            if (!api) return;
+            
+            editingApiId = id;
+            document.getElementById('modalTitle').textContent = 'Edit API';
+            
+            // Fill form
+            document.getElementById('apiName').value = api.name;
+            document.getElementById('apiDescription').value = api.description;
+            document.getElementById('apiCategory').value = api.category;
+            document.getElementById('apiTags').value = api.tags.join(', ');
+            document.getElementById('apiStatus').value = api.status;
+            document.getElementById('apiOpenApiUrl').value = api.openApiUrl || '';
+            document.getElementById('apiBaseUrl').value = api.baseUrl || '';
+            document.getElementById('apiOwner').value = api.owner || '';
+            
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            editingApiId = null;
+        }
+
+        // Form Handling
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const apiData = {
+                name: document.getElementById('apiName').value,
+                description: document.getElementById('apiDescription').value,
+                category: document.getElementById('apiCategory').value,
+                tags: document.getElementById('apiTags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                status: document.getElementById('apiStatus').value,
+                openApiUrl: document.getElementById('apiOpenApiUrl').value,
+                baseUrl: document.getElementById('apiBaseUrl').value,
+                owner: document.getElementById('apiOwner').value
+            };
+            
+            if (editingApiId) {
+                // Update existing API
+                const index = apis.findIndex(api => api.id === editingApiId);
+                if (index !== -1) {
+                    apis[index] = { ...apis[index], ...apiData };
+                }
+            } else {
+                // Add new API
+                const newApi = {
+                    id: Date.now(),
+                    ...apiData
+                };
+                apis.push(newApi);
+            }
+            
+            saveApis();
+            renderApis();
+            closeModal();
+        }
+
+        // Delete API
+        function deleteApi(id) {
+            if (confirm('Are you sure you want to delete this API?')) {
+                apis = apis.filter(api => api.id !== id);
+                saveApis();
+                renderApis();
+            }
+        }
+
+        // Request Access
+        function requestAccess(apiName) {
+            alert(`Access request submitted for "${apiName}". Our team will contact you within 24 hours with API credentials and documentation.`);
+        }
+
+        // Close modal on overlay click
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
